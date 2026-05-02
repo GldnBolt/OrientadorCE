@@ -48,6 +48,45 @@ expresion(negativa, Atributo) -->
     atributo(Atributo).
 
 expresion(negativa, Atributo) -->
+    negacion,
+    cualquier,
+    habilidad_positiva,
+    cualquier,
+    atributo(Atributo).
+
+expresion(negativa, Atributo) -->
+    negacion,
+    cualquier,
+    [me],
+    [veo],
+    cualquier,
+    atributo(Atributo).
+
+expresion(negativa, Atributo) -->
+    negacion,
+    cualquier,
+    [me],
+    [llama],
+    cualquier,
+    [atencion],
+    cualquier,
+    atributo(Atributo).
+
+expresion(negativa, Atributo) -->
+    negacion,
+    cualquier,
+    [estudiaria],
+    cualquier,
+    atributo(Atributo).
+
+expresion(negativa, Atributo) -->
+    negacion,
+    cualquier,
+    [trabajaria],
+    cualquier,
+    atributo(Atributo).
+
+expresion(negativa, Atributo) -->
     verbo_negativo,
     cualquier,
     atributo(Atributo).
@@ -122,10 +161,20 @@ verbo_negativo --> [aborrezco].
 verbo_negativo --> [desagrado].
 verbo_negativo --> [desagrada].
 
+verbo_negativo --> [evito].
+verbo_negativo --> [descarto].
+verbo_negativo --> [rechazaria].
+verbo_negativo --> [evitaria].
+verbo_negativo --> [aburren].
+verbo_negativo --> [aburre].
+verbo_negativo --> [molesta].
+verbo_negativo --> [molestan].
+
 negacion --> [no].
 negacion --> [nunca].
 negacion --> [jamas].
 negacion --> [tampoco].
+negacion --> [ni].
 
 afirmacion --> [si].
 afirmacion --> [claro].
