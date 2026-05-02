@@ -9,183 +9,20 @@ tokenizar(Texto, Tokens) :-
 
 oracion(Intencion, Atributo) -->
     cualquier,
-    expresion(Intencion, Atributo),
+    oracion_base(Intencion, Atributo),
     cualquier.
 
-expresion(positiva, Atributo) -->
-    afirmacion,
-    cualquier,
-    verbo_positivo,
-    cualquier,
-    atributo(Atributo).
+oracion_base(Intencion, Atributo) -->
+    sintagma_nominal,
+    sintagma_verbal(Intencion, Atributo).
 
 expresion(positiva, Atributo) -->
     afirmacion,
     cualquier,
-    habilidad_positiva,
-    cualquier,
-    atributo(Atributo).
-
-expresion(positiva, Atributo) -->
-    [me],
-    [llama],
-    cualquier,
-    [atencion],
-    cualquier,
-    atributo(Atributo).
-
-expresion(positiva, Atributo) -->
-    [me],
-    [veo],
-    cualquier,
-    atributo(Atributo).
-
-expresion(positiva, Atributo) -->
-    [me],
-    verbo_positivo,
-    atributo(Atributo).
-
-expresion(positiva, Atributo) -->
-    [me],
     verbo_positivo,
     cualquier,
     atributo(Atributo).
 
-expresion(positiva, Atributo) -->
-    [quiero],
-    [estudiar],
-    atributo(Atributo).
-
-expresion(positiva, Atributo) -->
-    [me],
-    [gustaria],
-    [estudiar],
-    atributo(Atributo).
-
-expresion(positiva, Atributo) -->
-    [me],
-    [veo],
-    [estudiando],
-    atributo(Atributo).
-
-expresion(negativa, Atributo) -->
-    negacion,
-    [me],
-    verbo_positivo,
-    atributo(Atributo).
-
-expresion(negativa, Atributo) -->
-    negacion,
-    [quiero],
-    [estudiar],
-    atributo(Atributo).
-
-expresion(negativa, Atributo) -->
-    negacion,
-    [me],
-    [gustaria],
-    [estudiar],
-    atributo(Atributo).
-
-expresion(negativa, Atributo) -->
-    negacion,
-    cualquier,
-    verbo_positivo,
-    cualquier,
-    atributo(Atributo).
-
-expresion(negativa, Atributo) -->
-    negacion,
-    cualquier,
-    habilidad_positiva,
-    cualquier,
-    atributo(Atributo).
-
-expresion(negativa, Atributo) -->
-    negacion,
-    cualquier,
-    [me],
-    [veo],
-    cualquier,
-    atributo(Atributo).
-
-expresion(negativa, Atributo) -->
-    negacion,
-    cualquier,
-    [me],
-    [llama],
-    cualquier,
-    [atencion],
-    cualquier,
-    atributo(Atributo).
-
-expresion(negativa, Atributo) -->
-    negacion,
-    cualquier,
-    [estudiaria],
-    cualquier,
-    atributo(Atributo).
-
-expresion(negativa, Atributo) -->
-    negacion,
-    cualquier,
-    [trabajaria],
-    cualquier,
-    atributo(Atributo).
-
-expresion(negativa, Atributo) -->
-    verbo_negativo,
-    cualquier,
-    atributo(Atributo).
-
-expresion(positiva, Atributo) -->
-    habilidad_positiva,
-    cualquier,
-    atributo(Atributo).
-
-expresion(negativa, Atributo) -->
-    habilidad_negativa,
-    cualquier,
-    atributo(Atributo).
-
-expresion(positiva, Atributo) -->
-    preferencia_positiva,
-    cualquier,
-    atributo(Atributo).
-
-expresion(negativa, Atributo) -->
-    preferencia_negativa,
-    cualquier,
-    atributo(Atributo).
-
-expresion(positiva, resolver_problemas) -->
-    [resolver],
-    cualquier,
-    [problemas].
-
-expresion(positiva, resolver_problemas) -->
-    verbo_positivo,
-    cualquier,
-    [resolver],
-    cualquier,
-    [problemas].
-
-expresion(negativa, resolver_problemas) -->
-    verbo_negativo,
-    cualquier,
-    [resolver],
-    cualquier,
-    [problemas].
-
-expresion(positiva, escuchar) -->
-    [prefiero],
-    cualquier,
-    [escuchar].
-
-expresion(positiva, hablar) -->
-    [prefiero],
-    cualquier,
-    [hablar].
 
 verbo_positivo --> [amo].
 verbo_positivo --> [adoro].
@@ -420,6 +257,105 @@ atributo(medios) --> [redes].
 atributo(medios) --> [noticias].
 atributo(medios) --> [comunicacion].
 atributo(medios) --> [periodismo].
+
+cualquier --> [].
+cualquier --> [_], cualquier.
+
+interpretar_texto(Texto, Intencion, Atributo) :-
+    tokenizar(Texto, Tokens),
+    phrase(oracion(Intencion, Atributo), Tokens), !.
+
+tokenizar(Texto, Tokens) :-
+    split_string(Texto, " ,.;:?!()[]{}\"'\n\t\r", "", Partes),
+    maplist(string_lower, Partes, Minusculas),
+    maplist(atom_string, Tokens, Minusculas).
+
+% ----------------------------
+% ORACION PRINCIPAL
+% ----------------------------
+
+oracion(Intencion, Atributo) -->
+    cualquier,
+    oracion_base(Intencion, Atributo),
+    cualquier.
+
+% ----------------------------
+% ESTRUCTURA FORMAL (LO QUE TE FALTABA)
+% ----------------------------
+
+% Caso completo: SN + SV
+oracion_base(Intencion, Atributo) -->
+    sintagma_nominal,
+    sintagma_verbal(Intencion, Atributo).
+
+% Caso sin sujeto (muy común en lenguaje natural)
+oracion_base(Intencion, Atributo) -->
+    sintagma_verbal(Intencion, Atributo).
+
+% Caso tipo: "no mucho la tecnologia"
+oracion_base(negativa, Atributo) -->
+    negacion,
+    cualquier,
+    atributo(Atributo).
+
+% ----------------------------
+% SINTAGMA NOMINAL
+% ----------------------------
+
+sintagma_nominal -->
+    pronombre.
+
+sintagma_nominal -->
+    pronombre,
+    complemento_nominal.
+
+pronombre --> [yo].
+pronombre --> [me].
+
+complemento_nominal --> [].
+complemento_nominal --> [soy].
+complemento_nominal --> [estoy].
+
+% ----------------------------
+% SINTAGMA VERBAL
+% ----------------------------
+
+sintagma_verbal(positiva, Atributo) -->
+    verbo_positivo,
+    complemento,
+    atributo(Atributo).
+
+sintagma_verbal(positiva, Atributo) -->
+    habilidad_positiva,
+    complemento,
+    atributo(Atributo).
+
+sintagma_verbal(positiva, Atributo) -->
+    preferencia_positiva,
+    complemento,
+    atributo(Atributo).
+
+sintagma_verbal(negativa, Atributo) -->
+    negacion,
+    verbo_positivo,
+    complemento,
+    atributo(Atributo).
+
+sintagma_verbal(negativa, Atributo) -->
+    verbo_negativo,
+    complemento,
+    atributo(Atributo).
+
+sintagma_verbal(negativa, Atributo) -->
+    negacion,
+    habilidad_positiva,
+    complemento,
+    atributo(Atributo).
+
+
+complemento --> [].
+complemento --> [_], complemento.
+
 
 cualquier --> [].
 cualquier --> [_], cualquier.

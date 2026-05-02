@@ -50,3 +50,37 @@ mejor_resultado([P1-_, P2-Prof2|Resto], Mejor) :-
 recomendar_nombre(Evidencias, Nombre, Puntaje) :-
     recomendar(Evidencias, Profesion, Puntaje),
     nombre_profesion(Profesion, Nombre).
+
+:- consult('BNF.pl').
+
+iniciar :-
+    recolectar_evidencias(Evidencias),
+    recomendar_nombre(Evidencias, Nombre, Puntaje),
+    nl,
+    write('Segun tus respuestas, te recomiendo: '), nl,
+    write(Nombre), nl,
+    write('Puntaje: '), write(Puntaje), nl.
+
+recolectar_evidencias(Evidencias) :-
+    findall(Atributo, pregunta(Atributo, _), Atributos),
+    preguntar_lista(Atributos, Evidencias).
+
+preguntar_lista([], []).
+
+preguntar_lista([Attr|Resto], [Evidencia|Evs]) :-
+    pregunta(Attr, Texto),
+    nl,
+    write(Texto), nl,
+    read_line_to_string(user_input, Input),
+
+    (
+        interpretar_texto(Input, Intencion, Attr)
+        ->
+        Evidencia =.. [Intencion, Attr],
+        preguntar_lista(Resto, Evs)
+        ;
+        write('No entendi, intenta otra vez.'), nl,
+        preguntar_lista([Attr|Resto], [Evidencia|Evs])
+    ).
+
+    preguntar_lista(Resto, Evs).
