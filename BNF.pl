@@ -40,6 +40,53 @@ expresion(positiva, Atributo) -->
     cualquier,
     atributo(Atributo).
 
+expresion(positiva, Atributo) -->
+    [me],
+    verbo_positivo,
+    atributo(Atributo).
+
+expresion(positiva, Atributo) -->
+    [me],
+    verbo_positivo,
+    cualquier,
+    atributo(Atributo).
+
+expresion(positiva, Atributo) -->
+    [quiero],
+    [estudiar],
+    atributo(Atributo).
+
+expresion(positiva, Atributo) -->
+    [me],
+    [gustaria],
+    [estudiar],
+    atributo(Atributo).
+
+expresion(positiva, Atributo) -->
+    [me],
+    [veo],
+    [estudiando],
+    atributo(Atributo).
+
+expresion(negativa, Atributo) -->
+    negacion,
+    [me],
+    verbo_positivo,
+    atributo(Atributo).
+
+expresion(negativa, Atributo) -->
+    negacion,
+    [quiero],
+    [estudiar],
+    atributo(Atributo).
+
+expresion(negativa, Atributo) -->
+    negacion,
+    [me],
+    [gustaria],
+    [estudiar],
+    atributo(Atributo).
+
 expresion(negativa, Atributo) -->
     negacion,
     cualquier,
@@ -211,6 +258,9 @@ atributo(tecnologia) --> [computadoras].
 atributo(tecnologia) --> [computadora].
 atributo(tecnologia) --> [programacion].
 atributo(tecnologia) --> [software].
+atributo(tecnologia) --> [computadores].
+atributo(tecnologia) --> [informatica].
+atributo(tecnologia) --> [sistemas].
 
 atributo(matematicas) --> [matematicas].
 atributo(matematicas) --> [mate].
@@ -228,6 +278,9 @@ atributo(personas) --> [gente].
 atributo(personas) --> [humanos].
 atributo(personas) --> [pacientes].
 atributo(personas) --> [clientes].
+atributo(personas) --> [psicologia].
+atributo(personas) --> [psicologo].
+atributo(personas) --> [psicologa].
 
 atributo(escuchar) --> [escuchar].
 atributo(escuchar) --> [escucho].
@@ -247,6 +300,10 @@ atributo(salud) --> [salud].
 atributo(salud) --> [medicina].
 atributo(salud) --> [hospitales].
 atributo(salud) --> [enfermedades].
+atributo(salud) --> [medico].
+atributo(salud) --> [medica].
+atributo(salud) --> [doctor].
+atributo(salud) --> [doctora].
 
 atributo(ciencias) --> [ciencias].
 atributo(ciencias) --> [biologia].
@@ -255,6 +312,9 @@ atributo(ciencias) --> [quimica].
 atributo(justicia) --> [justicia].
 atributo(justicia) --> [leyes].
 atributo(justicia) --> [derecho].
+atributo(justicia) --> [abogado].
+atributo(justicia) --> [abogada].
+atributo(justicia) --> [tribunales].
 
 atributo(argumentar) --> [argumentar].
 atributo(argumentar) --> [debatir].
@@ -271,6 +331,9 @@ atributo(resolver_conflictos) --> [negociaciones].
 atributo(negocios) --> [negocios].
 atributo(negocios) --> [empresas].
 atributo(negocios) --> [emprendimientos].
+atributo(negocios) --> [administracion].
+atributo(negocios) --> [gerencia].
+atributo(negocios) --> [empresa].
 
 atributo(liderazgo) --> [liderazgo].
 atributo(liderazgo) --> [liderar].
@@ -301,6 +364,9 @@ atributo(innovacion) --> [innovar].
 atributo(ensenar) --> [ensenar].
 atributo(ensenar) --> [educar].
 atributo(ensenar) --> [clases].
+atributo(ensenar) --> [docencia].
+atributo(ensenar) --> [profesor].
+atributo(ensenar) --> [profesora].
 
 atributo(explicar) --> [explicar].
 atributo(explicar) --> [explico].
@@ -312,6 +378,9 @@ atributo(aprendizaje) --> [estudiar].
 
 atributo(diseno) --> [diseno].
 atributo(diseno) --> [disenar].
+atributo(diseno) --> [arquitectura].
+atributo(diseno) --> [arquitecto].
+atributo(diseno) --> [arquitecta].
 
 atributo(espacios) --> [espacios].
 atributo(espacios) --> [edificios].
@@ -332,6 +401,8 @@ atributo(orden) --> [ordenada].
 atributo(finanzas) --> [finanzas].
 atributo(finanzas) --> [dinero].
 atributo(finanzas) --> [contabilidad].
+atributo(finanzas) --> [contador].
+atributo(finanzas) --> [contadora].
 
 atributo(analisis) --> [analisis].
 atributo(analisis) --> [analizar].
@@ -347,6 +418,8 @@ atributo(escribir) --> [textos].
 atributo(medios) --> [medios].
 atributo(medios) --> [redes].
 atributo(medios) --> [noticias].
+atributo(medios) --> [comunicacion].
+atributo(medios) --> [periodismo].
 
 cualquier --> [].
 cualquier --> [_], cualquier.
