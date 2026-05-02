@@ -13,7 +13,30 @@ oracion(Intencion, Atributo) -->
     cualquier.
 
 expresion(positiva, Atributo) -->
+    afirmacion,
+    cualquier,
     verbo_positivo,
+    cualquier,
+    atributo(Atributo).
+
+expresion(positiva, Atributo) -->
+    afirmacion,
+    cualquier,
+    habilidad_positiva,
+    cualquier,
+    atributo(Atributo).
+
+expresion(positiva, Atributo) -->
+    [me],
+    [llama],
+    cualquier,
+    [atencion],
+    cualquier,
+    atributo(Atributo).
+
+expresion(positiva, Atributo) -->
+    [me],
+    [veo],
     cualquier,
     atributo(Atributo).
 
@@ -103,6 +126,13 @@ negacion --> [no].
 negacion --> [nunca].
 negacion --> [jamas].
 negacion --> [tampoco].
+
+afirmacion --> [si].
+afirmacion --> [claro].
+afirmacion --> [correcto].
+afirmacion --> [exacto].
+afirmacion --> [afirmativo].
+afirmacion --> [definitivamente].
 
 habilidad_positiva --> [habil].
 habilidad_positiva --> [bueno].
