@@ -226,6 +226,26 @@ sintagma_verbal(positiva, Nivel, Atributo) -->
     conectores,
     nivel_opcional(Nivel).
 
+sintagma_verbal(positiva, Nivel, Atributo) -->
+    [llama],
+    conectores,
+    [atencion],
+    conectores,
+    nivel_opcional(Nivel),
+    conectores,
+    atributo(Atributo).
+
+sintagma_verbal(negativa, Nivel, Atributo) -->
+    negacion,
+    conectores,
+    [llama],
+    conectores,
+    [atencion],
+    conectores,
+    nivel_opcional(Nivel),
+    conectores,
+    atributo(Atributo).
+
 % Ej: no me gusta la tecnologia
 sintagma_verbal(negativa, Nivel, Atributo) -->
     negacion,
@@ -573,19 +593,24 @@ atributo(salud) --> [medico].
 atributo(salud) --> [medica].
 atributo(salud) --> [doctor].
 atributo(salud) --> [doctora].
+
 atributo(justicia) --> [derecho].
 atributo(justicia) --> [abogado].
 atributo(justicia) --> [abogada].
 atributo(negocios) --> [administracion].
 atributo(negocios) --> [gerencia].
+
 atributo(diseno) --> [arquitectura].
 atributo(diseno) --> [arquitecto].
 atributo(diseno) --> [arquitecta].
+
 atributo(ensenar) --> [docencia].
 atributo(ensenar) --> [profesor].
 atributo(ensenar) --> [profesora].
+
 atributo(finanzas) --> [contabilidad].
 atributo(finanzas) --> [contador].
 atributo(finanzas) --> [contadora].
+
 atributo(hablar) --> [comunicacion].
 atributo(hablar) --> [periodismo].
