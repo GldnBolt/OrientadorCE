@@ -493,6 +493,11 @@ atributo(tecnologia) --> [tecnologia].
 atributo(tecnologia) --> [computadoras].
 atributo(tecnologia) --> [computador].
 atributo(tecnologia) --> [programacion].
+atributo(tecnologia) --> [sistemas].
+
+atributo(personas) --> [psicologia].
+atributo(personas) --> [psicologo].
+atributo(personas) --> [psicologa].
 
 atributo(matematicas) --> [matematicas].
 atributo(matematicas) --> [mate].
@@ -562,3 +567,25 @@ atributo(hablar) --> [publico].
 
 atributo(escribir) --> [escribir].
 atributo(escribir) --> [escritura].
+
+atributo(salud) --> [medicina].
+atributo(salud) --> [medico].
+atributo(salud) --> [medica].
+atributo(salud) --> [doctor].
+atributo(salud) --> [doctora].
+atributo(justicia) --> [derecho].
+atributo(justicia) --> [abogado].
+atributo(justicia) --> [abogada].
+atributo(negocios) --> [administracion].
+atributo(negocios) --> [gerencia].
+atributo(diseno) --> [arquitectura].
+atributo(diseno) --> [arquitecto].
+atributo(diseno) --> [arquitecta].
+atributo(ensenar) --> [docencia].
+atributo(ensenar) --> [profesor].
+atributo(ensenar) --> [profesora].
+atributo(finanzas) --> [contabilidad].
+atributo(finanzas) --> [contador].
+atributo(finanzas) --> [contadora].
+atributo(hablar) --> [comunicacion].
+atributo(hablar) --> [periodismo].
