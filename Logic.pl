@@ -48,6 +48,18 @@ puntaje_lista(Profesion, [negativa(Atributo)|Resto], Acumulado, Puntaje) :-
     NuevoAcumulado is Acumulado + Puntos,
     puntaje_lista(Profesion, Resto, NuevoAcumulado, Puntaje).
 
+puntaje_lista(Profesion, [positiva(Atributo, Nivel)|Resto], Acumulado, Puntaje) :-
+    puntaje_positivo(Profesion, Atributo, Base),
+    ajustar_por_nivel(Base, Nivel, Puntos),
+    NuevoAcumulado is Acumulado + Puntos,
+    puntaje_lista(Profesion, Resto, NuevoAcumulado, Puntaje).
+
+puntaje_lista(Profesion, [negativa(Atributo, Nivel)|Resto], Acumulado, Puntaje) :-
+    puntaje_negativo(Profesion, Atributo, Base),
+    ajustar_por_nivel(Base, Nivel, Puntos),
+    NuevoAcumulado is Acumulado + Puntos,
+    puntaje_lista(Profesion, Resto, NuevoAcumulado, Puntaje).
+
 % Reglas de puntaje:
 % Evidencia positiva:
 %   - Afinidad: +2 puntos
@@ -76,6 +88,16 @@ puntaje_negativo(Profesion, Atributo, -2) :-
     afinidad(Profesion, Atributo), !. % cut: evita evaluar otras reglas
 
 puntaje_negativo(_, _, 0).
+
+ajustar_por_nivel(Puntos, alto, Ajustado) :-
+    Ajustado is Puntos * 2.
+
+ajustar_por_nivel(Puntos, medio, Puntos).
+
+ajustar_por_nivel(Puntos, bajo, Ajustado) :-
+    Ajustado is Puntos // 2.
+
+ajustar_por_nivel(Puntos, _, Puntos).
 
 % Genera una lista de pares Puntaje-Profesion para todas las profesiones
 % y selecciona la mejor según el puntaje.
@@ -136,13 +158,18 @@ preguntar_lista([Attr|Resto], [Evidencia|Evs]) :-
     % interpretar_texto/3 determina si la respuesta del usuario
     % corresponde a una evidencia positiva o negativa.
     (
-        interpretar_texto(Input, Intencion, Attr)
-        ->
-        Evidencia =.. [Intencion, Attr],
-        preguntar_lista(Resto, Evs)
-        ;
-        write('No entendi, intenta otra vez.'), nl,
-        preguntar_lista([Attr|Resto], [Evidencia|Evs])
+    interpretar_texto(Input, Intencion, Nivel, Attr)
+    ->
+    Evidencia =.. [Intencion, Attr, Nivel],
+    preguntar_lista(Resto, Evs)
+    ;
+    interpretar_texto(Input, Intencion, Attr)
+    ->
+    Evidencia =.. [Intencion, Attr],
+    preguntar_lista(Resto, Evs)
+    ;
+    write('No entendi, intenta otra vez.'), nl,
+    preguntar_lista([Attr|Resto], [Evidencia|Evs])
     ).
 
     

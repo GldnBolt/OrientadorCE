@@ -38,6 +38,10 @@ interpretar_texto(Texto, Intencion, Atributo) :-
     tokenizar(Texto, Tokens),
     phrase(oracion(Intencion, _, Atributo), Tokens), !.
 
+interpretar_texto(Texto, Intencion, Nivel, Atributo) :-
+    tokenizar(Texto, Tokens),
+    phrase(oracion(Intencion, Nivel, Atributo), Tokens), !.
+
 % Convierte un string en una lista de tokens (átomos).
 % - Separa por signos de puntuación
 % - Convierte a minúsculas
