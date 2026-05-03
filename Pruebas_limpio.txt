@@ -1,0 +1,648 @@
+PRUEBAS ORIENTADORCE
+
+1. Carga del sistema
+
+Comando:
+
+swipl
+
+Consulta:
+
+['Logic.pl'].
+
+Resultado esperado:
+
+true.
+
+
+2. Pruebas de BD.pl
+
+BD-01
+
+Consulta:
+
+profesion(ingenieria_computadores).
+
+Resultado esperado:
+
+true.
+
+
+BD-02
+
+Consulta:
+
+profesion(psicologia).
+
+Resultado esperado:
+
+true.
+
+
+BD-03
+
+Consulta:
+
+afinidad(ingenieria_computadores, tecnologia).
+
+Resultado esperado:
+
+true.
+
+
+BD-04
+
+Consulta:
+
+afinidad(psicologia, personas).
+
+Resultado esperado:
+
+true.
+
+
+BD-05
+
+Consulta:
+
+fortaleza(psicologia, empatia).
+
+Resultado esperado:
+
+true.
+
+
+BD-06
+
+Consulta:
+
+antagonia(ingenieria_computadores, desinteres_tecnologia).
+
+Resultado esperado:
+
+true.
+
+
+BD-07
+
+Consulta:
+
+nombre_profesion(medicina, Nombre).
+
+Resultado esperado:
+
+Nombre = 'Medicina'.
+
+
+BD-08
+
+Consulta:
+
+opuesto(tecnologia, Opuesto).
+
+Resultado esperado:
+
+Opuesto = desinteres_tecnologia.
+
+
+3. Pruebas de BNF.pl
+
+BNF-01
+
+Consulta:
+
+interpretar_texto('Yo amo las matematicas', I, A).
+
+Resultado esperado:
+
+I = positiva,
+A = matematicas.
+
+
+BNF-02
+
+Consulta:
+
+interpretar_texto('Yo odio la tecnologia', I, A).
+
+Resultado esperado:
+
+I = negativa,
+A = tecnologia.
+
+
+BNF-03
+
+Consulta:
+
+interpretar_texto('Correcto yo soy muy habil con la tecnologia', I, A).
+
+Resultado esperado:
+
+I = positiva,
+A = tecnologia.
+
+
+BNF-04
+
+Consulta:
+
+interpretar_texto('Yo me intereso mucho por las personas', I, A).
+
+Resultado esperado:
+
+I = positiva,
+A = personas.
+
+
+BNF-05
+
+Consulta:
+
+interpretar_texto('No me interesa trabajar con personas', I, A).
+
+Resultado esperado:
+
+I = negativa,
+A = personas.
+
+
+BNF-06
+
+Consulta:
+
+interpretar_texto('Si disfruto mucho de resolver problemas', I, A).
+
+Resultado esperado:
+
+I = positiva,
+A = resolver_problemas.
+
+
+BNF-07
+
+Consulta:
+
+interpretar_texto('Yo prefiero escuchar', I, A).
+
+Resultado esperado:
+
+I = positiva,
+A = escuchar.
+
+
+BNF-08
+
+Consulta:
+
+interpretar_texto('si', I, A).
+
+Resultado esperado:
+
+false.
+
+
+BNF-09
+
+Consulta:
+
+interpretar_texto('no', I, A).
+
+Resultado esperado:
+
+false.
+
+
+BNF-10
+
+Consulta:
+
+interpretar_texto('Me interesa medicina', I, A).
+
+Resultado esperado:
+
+I = positiva,
+A = salud.
+
+
+BNF-11
+
+Consulta:
+
+interpretar_texto('Quiero estudiar psicologia', I, A).
+
+Resultado esperado:
+
+I = positiva,
+A = personas.
+
+
+BNF-12
+
+Consulta:
+
+interpretar_texto('Me llama la atencion derecho', I, A).
+
+Resultado esperado:
+
+I = positiva,
+A = justicia.
+
+
+BNF-13
+
+Consulta:
+
+interpretar_texto('No quiero estudiar medicina', I, A).
+
+Resultado esperado:
+
+I = negativa,
+A = salud.
+
+
+BNF-14
+
+Consulta:
+
+interpretar_texto('El cielo esta muy nublado hoy', I, A).
+
+Resultado esperado:
+
+false.
+
+
+4. Pruebas de Logic.pl
+
+LOG-01
+
+Consulta:
+
+puntaje_profesion(ingenieria_computadores, [positiva(tecnologia), positiva(matematicas), positiva(resolver_problemas)], P).
+
+Resultado esperado:
+
+P = 6.
+
+
+LOG-02
+
+Consulta:
+
+puntaje_profesion(psicologia, [positiva(personas), positiva(escuchar), positiva(ayudar)], P).
+
+Resultado esperado:
+
+P = 6.
+
+
+LOG-03
+
+Consulta:
+
+recomendar_nombre([positiva(tecnologia), positiva(matematicas), positiva(resolver_problemas)], Nombre, Puntaje).
+
+Resultado esperado:
+
+Nombre = 'Ingenieria en Computadores',
+Puntaje = 6.
+
+
+LOG-04
+
+Consulta:
+
+recomendar_nombre([positiva(personas), positiva(escuchar), positiva(ayudar)], Nombre, Puntaje).
+
+Resultado esperado:
+
+Nombre = 'Psicologia',
+Puntaje = 6.
+
+
+LOG-05
+
+Consulta:
+
+recomendar_nombre([negativa(tecnologia), positiva(personas), positiva(escuchar), positiva(ayudar)], Nombre, Puntaje).
+
+Resultado esperado:
+
+Nombre = 'Psicologia'.
+
+
+LOG-06
+
+Consulta:
+
+recomendar_nombre([positiva(salud), positiva(ciencias), positiva(ayudar), positiva(personas)], Nombre, Puntaje).
+
+Resultado esperado:
+
+Nombre = 'Medicina'.
+
+
+LOG-07
+
+Consulta:
+
+recomendar_nombre([positiva(justicia), positiva(argumentar), positiva(leer), positiva(resolver_conflictos)], Nombre, Puntaje).
+
+Resultado esperado:
+
+Nombre = 'Derecho'.
+
+
+LOG-08
+
+Consulta:
+
+recomendar_nombre([positiva(negocios), positiva(liderazgo), positiva(organizacion), positiva(toma_decisiones)], Nombre, Puntaje).
+
+Resultado esperado:
+
+Nombre = 'Administracion'.
+
+
+LOG-09
+
+Consulta:
+
+recomendar_nombre([positiva(creatividad), positiva(arte), positiva(comunicacion_visual), positiva(innovacion)], Nombre, Puntaje).
+
+Resultado esperado:
+
+Nombre = 'Diseno'.
+
+
+LOG-10
+
+Consulta:
+
+recomendar_nombre([positiva(numeros), positiva(orden), positiva(finanzas), positiva(analisis)], Nombre, Puntaje).
+
+Resultado esperado:
+
+Nombre = 'Contabilidad'.
+
+
+5. Pruebas de conversacion completa
+
+CONV-01
+
+Consulta:
+
+iniciar.
+
+Respuestas:
+
+Yo amo la tecnologia
+Me gustan mucho las matematicas
+Disfruto mucho de resolver problemas
+No me interesa trabajar con personas
+No prefiero escuchar
+No me gusta ayudar
+No me interesa la salud
+No me gustan las ciencias
+No me interesa la justicia
+No me gusta argumentar
+No me interesan los negocios
+No me gusta liderar
+No soy creativo
+No me interesa el arte
+No me gusta ensenar
+No me gusta dibujar
+Me gustan los numeros
+No me interesan las finanzas
+No me gusta hablar en publico
+No me gusta escribir
+
+Resultado esperado:
+
+Ingenieria en Computadores.
+
+
+CONV-02
+
+Consulta:
+
+iniciar.
+
+Respuestas:
+
+Yo odio la tecnologia
+No me gustan las matematicas
+Me gusta resolver problemas
+Me interesan mucho las personas
+Yo prefiero escuchar
+Me gusta ayudar a otras personas
+No me interesa la salud
+No me gustan las ciencias
+No me interesa la justicia
+No me gusta argumentar
+No me interesan los negocios
+No me gusta liderar
+No soy creativo
+No me interesa el arte
+No me gusta ensenar
+No me gusta dibujar
+No me gustan los numeros
+No me interesan las finanzas
+No me gusta hablar mucho
+No me gusta escribir
+
+Resultado esperado:
+
+Psicologia.
+
+
+CONV-03
+
+Consulta:
+
+iniciar.
+
+Respuestas:
+
+No me interesa mucho la tecnologia
+Me gustan las matematicas
+Me gusta resolver problemas
+Me interesan las personas
+Me gusta escuchar
+Me gusta ayudar
+Me interesa mucho la salud
+Me gustan las ciencias
+No me interesa la justicia
+No me gusta argumentar
+No me interesan los negocios
+No me gusta liderar
+No me considero creativo
+No me interesa el arte
+No me gusta ensenar
+No me gusta dibujar
+No me gustan los numeros
+No me interesan las finanzas
+No me gusta hablar en publico
+No me gusta escribir
+
+Resultado esperado:
+
+Medicina.
+
+
+CONV-04
+
+Consulta:
+
+iniciar.
+
+Respuestas:
+
+No me interesa la tecnologia
+No me gustan las matematicas
+Me gusta resolver problemas
+Me interesan las personas
+No prefiero escuchar
+Me gusta ayudar
+No me interesa la salud
+No me gustan las ciencias
+Me interesa mucho la justicia
+Me gusta argumentar y defender ideas
+No me interesan los negocios
+No me gusta liderar
+No soy creativo
+No me interesa el arte
+No me gusta ensenar
+No me gusta dibujar
+No me gustan los numeros
+No me interesan las finanzas
+Me gusta hablar
+Me gusta escribir
+
+Resultado esperado:
+
+Derecho.
+
+
+CONV-05
+
+Consulta:
+
+iniciar.
+
+Respuestas:
+
+No me interesa la tecnologia
+Me gustan un poco las matematicas
+Me gusta resolver problemas
+Me interesan las personas
+No prefiero escuchar
+No me gusta mucho ayudar
+No me interesa la salud
+No me gustan las ciencias
+No me interesa la justicia
+No me gusta argumentar
+Me interesan los negocios
+Me gusta liderar equipos
+No soy muy creativo
+No me interesa el arte
+No me gusta ensenar
+No me gusta dibujar
+Me gustan los numeros
+Me interesan las finanzas
+Me gusta hablar
+No me gusta escribir
+
+Resultado esperado:
+
+Administracion.
+
+
+CONV-06
+
+Consulta:
+
+iniciar.
+
+Respuestas:
+
+No me interesa la tecnologia
+No me gustan las matematicas
+Me gusta resolver problemas
+No me interesan mucho las personas
+No prefiero escuchar
+No me gusta ayudar
+No me interesa la salud
+No me gustan las ciencias
+No me interesa la justicia
+No me gusta argumentar
+No me interesan los negocios
+No me gusta liderar
+Me considero una persona creativa
+Me interesa el arte
+No me gusta ensenar
+Me gusta dibujar y disenar
+No me gustan los numeros
+No me interesan las finanzas
+No me gusta hablar en publico
+No me gusta escribir
+
+Resultado esperado:
+
+Diseno o Arquitectura.
+
+
+6. Pruebas de entradas no validas
+
+ERR-01
+
+Entrada:
+
+asdfghjkl
+
+Resultado esperado:
+
+El sistema solicita repetir la respuesta.
+
+
+ERR-02
+
+Entrada:
+
+si
+
+Resultado esperado:
+
+El sistema solicita repetir la respuesta.
+
+
+ERR-03
+
+Entrada:
+
+no
+
+Resultado esperado:
+
+El sistema solicita repetir la respuesta.
+
+
+ERR-04
+
+Entrada:
+
+Ayer fui al supermercado
+
+Resultado esperado:
+
+El sistema solicita repetir la respuesta.
+
+
+7. Criterios de revision
+
+El sistema debe cargar con ['Logic.pl'].
+El sistema no debe mostrar errores de compilacion.
+El sistema debe interpretar frases positivas y negativas.
+El sistema no debe aceptar si o no como respuestas completas.
+El sistema debe recomendar una profesion al finalizar.
+El sistema debe manejar entradas no reconocidas sin detenerse.
