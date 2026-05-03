@@ -1,21 +1,56 @@
-% =========================================
 % BNF.pl
-% Parser para interpretar respuestas en lenguaje natural
-% =========================================
+%
+% Parser basado en DCG (Definite Clause Grammars)
+% para interpretar respuestas en lenguaje natural.
+%
+% Convierte texto ingresado por el usuario en:
+%   Intencion: positiva | negativa
+%   Nivel: alto | medio | bajo
+%   Atributo: dominio semántico detectado
+%
+% Flujo:
+% Texto -> tokenizar -> DCG (oracion) -> estructura semántica
+%
+% Ejemplo:
+% "me gusta mucho la tecnologia"
+% -> positiva, alto, tecnologia
+%
+% Este parser es tolerante a:
+% - palabras de relleno
+% - variaciones de orden
+% - errores ortográficos simples
+
 
 % =========================================
 % INTERPRETACION PRINCIPAL
 % =========================================
 
+% Predicado principal del parser.
+% Convierte texto en tokens y aplica la gramática DCG.
+% Si encuentra una oración válida, retorna:
+%   Intencion (positiva/negativa)
+%   Nivel (alto/medio/bajo)
+%   Atributo identificado
+%
+% El cut (!) evita multiples interpretaciones.
+
 interpretar_texto(Texto, Intencion, Atributo) :-
     tokenizar(Texto, Tokens),
     phrase(oracion(Intencion, _, Atributo), Tokens), !.
 
-% Divide el texto en tokens, pasa a minuscula y elimina tildes.
+% Convierte un string en una lista de tokens (átomos).
+% - Separa por signos de puntuación
+% - Convierte a minúsculas
+% - Elimina tildes
 tokenizar(Texto, Tokens) :-
     split_string(Texto, " ,.;:?!¿¡()[]{}\"'\n\t\r", "", Partes),
     maplist(normalizar_token, Partes, Tokens).
 
+
+% Normaliza cada palabra:
+% - Pasa a minúscula
+% - Elimina tildes (á -> a, ñ -> n, etc.)
+% - Convierte a átomo para uso en DCG
 normalizar_token(Texto, Atom) :-
     string_lower(Texto, Minuscula),
     string_chars(Minuscula, Chars),
@@ -23,6 +58,8 @@ normalizar_token(Texto, Atom) :-
     string_chars(SinTildes, Limpios),
     atom_string(Atom, SinTildes).
 
+
+% Reglas para eliminar tildes y normalizar caracteres especiales.
 quitar_tilde('á', 'a').
 quitar_tilde('é', 'e').
 quitar_tilde('í', 'i').
@@ -36,14 +73,23 @@ quitar_tilde(C, C).
 % ORACION GENERAL
 % =========================================
 
+
+% Regla principal de la gramática.
+% Permite:
+% - palabras de relleno al inicio y final
+% - una oración base con contenido semántico
 oracion(Intencion, Nivel, Atributo) -->
     relleno_inicial,
     oracion_base(Intencion, Nivel, Atributo),
     relleno_final.
 
+
+% Permite ignorar palabras de relleno al inicio de la oración.
+% Ej: "eh", "mmm", "bueno"
 relleno_inicial --> [].
 relleno_inicial --> palabra_relleno, relleno_inicial.
 
+% Permite ignorar palabras de relleno al final de la oración.
 relleno_final --> [].
 relleno_final --> palabra_relleno, relleno_final.
 
@@ -57,6 +103,11 @@ palabra_relleno --> [correcto].
 % CASOS PRINCIPALES
 % =========================================
 
+
+% Define las estructuras principales válidas de una oración:
+% 1. Sintagma nominal + verbal
+% 2. Solo sintagma verbal
+% 3. Respuestas cortas
 oracion_base(Intencion, Nivel, Atributo) -->
     sintagma_nominal,
     conectores,
@@ -72,13 +123,18 @@ oracion_base(Intencion, Nivel, Atributo) -->
 % SINTAGMA NOMINAL
 % =========================================
 
+% Representa el sujeto implícito del usuario.
+% Ej: "yo", "me"
 sintagma_nominal --> [yo].
 sintagma_nominal --> [me].
+
 
 % =========================================
 % CONECTORES / PALABRAS INTERMEDIAS
 % =========================================
 
+% Permite palabras intermedias sin carga semántica fuerte.
+% Facilita flexibilidad en la estructura de la oración.
 conectores --> [].
 conectores --> conector, conectores.
 
@@ -117,6 +173,21 @@ pronombre_opcional --> pronombre_objeto.
 % =========================================
 % SINTAGMA VERBAL
 % =========================================
+% Define las formas principales de expresar una intención:
+%
+% positiva:
+%   - "me gusta X"
+%   - "amo X"
+%   - "soy bueno en X"
+%
+% negativa:
+%   - "no me gusta X"
+%   - "odio X"
+%
+% También maneja:
+% - diferentes órdenes de palabras
+% - niveles de intensidad
+% - negaciones parciales
 
 % Ej: me gusta la tecnologia
 % Ej: amo mucho las matematicas
@@ -243,6 +314,8 @@ respuesta_corta(positiva, bajo, _) -->
 % FRASES CORTAS
 % =========================================
 
+% Construye una interpretación positiva flexible:
+% combina nivel, verbo y atributo opcional.
 frase_positiva_corta(NivelFinal, Atributo) -->
     conectores,
     elemento_positivo(NivelBase),
@@ -252,6 +325,7 @@ frase_positiva_corta(NivelFinal, Atributo) -->
     nivel_final(NivelBase, NivelFinal),
     conectores.
 
+% Construye una interpretación negativa con estructura flexible.
 frase_negativa_corta(NivelFinal, Atributo) -->
     conectores,
     pronombre_opcional,
@@ -298,6 +372,8 @@ nivel_final(Nivel, Nivel) -->
 % =========================================
 % NIVEL
 % =========================================
+% Define el nivel de intensidad de la respuesta:
+% alto, medio o bajo.
 
 nivel(alto) --> [mucho].
 nivel(alto) --> [bastante].
@@ -311,6 +387,8 @@ nivel(medio) --> [regular].
 nivel(bajo) --> [poco].
 nivel(bajo) --> [apenas].
 
+% Permite que el nivel no esté explícito.
+% Por defecto se asume nivel medio.
 nivel_opcional(Nivel) -->
     nivel(Nivel).
 
@@ -320,7 +398,7 @@ nivel_opcional(medio) -->
 % =========================================
 % LEXICO POSITIVO
 % =========================================
-
+% Verbos que indican afinidad o gusto.
 verbo_positivo --> [gusta].
 verbo_positivo --> [gustan].
 verbo_positivo --> [encanta].
@@ -333,19 +411,36 @@ verbo_positivo --> [disfruto].
 verbo_positivo --> [prefiero].
 verbo_positivo --> [fascina].
 verbo_positivo --> [fascinan].
+verbo_positivo --> [intereso].
+verbo_positivo --> [agrada].
+verbo_positivo --> [agradan].
+verbo_positivo --> [gustaria].
+verbo_positivo --> [quiero].
 
 % Error ortografico comun: "facinan"
 verbo_positivo --> [facina].
 verbo_positivo --> [facinan].
 
+
+% Verbos que indican rechazo o desagrado.
 verbo_negativo --> [odio].
 verbo_negativo --> [detesto].
 verbo_negativo --> [evito].
+verbo_negativo --> [rechazo].
+verbo_negativo --> [aborrezco].
+verbo_negativo --> [desagrada].
+verbo_negativo --> [desagradan].
+verbo_negativo --> [molesta].
+verbo_negativo --> [molestan].
+
 
 verbo_ser --> [soy].
 verbo_ser --> [es].
 verbo_ser --> [son].
 
+
+% Expresiones de habilidad o cualidad positiva.
+% Ej: "soy muy habil"
 estado_positivo(Nivel) -->
     verbo_ser,
     intensidad_opcional(Nivel),
@@ -366,9 +461,13 @@ cualidad_positiva --> [buena].
 cualidad_positiva --> [creativo].
 cualidad_positiva --> [creativa].
 
+% Palabras que indican negación.
 negacion --> [no].
 negacion --> [nunca].
+negacion --> [jamas].
 
+
+% Palabras que indican afirmación.
 afirmacion --> [si].
 afirmacion --> [claro].
 afirmacion --> [correcto].
@@ -377,6 +476,12 @@ afirmacion --> [afirmativo].
 % =========================================
 % ATRIBUTOS
 % =========================================
+% Mapea palabras del lenguaje natural a atributos del sistema.
+% Cada atributo representa un área de interés o habilidad.
+%
+% Ejemplo:
+% "computadoras" -> tecnologia
+% "mate" -> matematicas
 
 atributo(tecnologia) --> [tecnologia].
 atributo(tecnologia) --> [computadoras].
