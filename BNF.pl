@@ -138,6 +138,12 @@ sintagma_nominal --> [me].
 conectores --> [].
 conectores --> conector, conectores.
 
+conector --> [trabajar].
+conector --> [trabajando].
+conector --> [estudiar].
+conector --> [estudiando].
+conector --> [pasar].
+conector --> [frente].
 conector --> [me].
 conector --> [mi].
 conector --> [mis].
