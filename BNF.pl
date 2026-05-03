@@ -1,24 +1,57 @@
 % =========================================
-% INTERPRETACIÓN PRINCIPAL
+% BNF.pl
+% Parser para interpretar respuestas en lenguaje natural
+% =========================================
+
+% =========================================
+% INTERPRETACION PRINCIPAL
 % =========================================
 
 interpretar_texto(Texto, Intencion, Atributo) :-
     tokenizar(Texto, Tokens),
     phrase(oracion(Intencion, _, Atributo), Tokens), !.
 
+% Divide el texto en tokens, pasa a minuscula y elimina tildes.
 tokenizar(Texto, Tokens) :-
-    split_string(Texto, " ,.;:?!()[]{}\"'\n\t\r", "", Partes),
-    maplist(string_lower, Partes, Minusculas),
-    maplist(atom_string, Tokens, Minusculas).
+    split_string(Texto, " ,.;:?!¿¡()[]{}\"'\n\t\r", "", Partes),
+    maplist(normalizar_token, Partes, Tokens).
+
+normalizar_token(Texto, Atom) :-
+    string_lower(Texto, Minuscula),
+    string_chars(Minuscula, Chars),
+    maplist(quitar_tilde, Chars, Limpios),
+    string_chars(SinTildes, Limpios),
+    atom_string(Atom, SinTildes).
+
+quitar_tilde('á', 'a').
+quitar_tilde('é', 'e').
+quitar_tilde('í', 'i').
+quitar_tilde('ó', 'o').
+quitar_tilde('ú', 'u').
+quitar_tilde('ü', 'u').
+quitar_tilde('ñ', 'n').
+quitar_tilde(C, C).
 
 % =========================================
 % ORACION GENERAL
 % =========================================
 
 oracion(Intencion, Nivel, Atributo) -->
-    cualquier,
+    relleno_inicial,
     oracion_base(Intencion, Nivel, Atributo),
-    cualquier.
+    relleno_final.
+
+relleno_inicial --> [].
+relleno_inicial --> palabra_relleno, relleno_inicial.
+
+relleno_final --> [].
+relleno_final --> palabra_relleno, relleno_final.
+
+palabra_relleno --> [eh].
+palabra_relleno --> [mmm].
+palabra_relleno --> [bueno].
+palabra_relleno --> [pues].
+palabra_relleno --> [correcto].
 
 % =========================================
 % CASOS PRINCIPALES
@@ -26,220 +59,395 @@ oracion(Intencion, Nivel, Atributo) -->
 
 oracion_base(Intencion, Nivel, Atributo) -->
     sintagma_nominal,
+    conectores,
     sintagma_verbal(Intencion, Nivel, Atributo).
 
 oracion_base(Intencion, Nivel, Atributo) -->
     sintagma_verbal(Intencion, Nivel, Atributo).
 
-oracion_base(Intencion, Nivel, _) -->
-    respuesta_corta(Intencion, Nivel).
+oracion_base(Intencion, Nivel, Atributo) -->
+    respuesta_corta(Intencion, Nivel, Atributo).
 
 % =========================================
 % SINTAGMA NOMINAL
 % =========================================
 
-sintagma_nominal --> pronombre.
-sintagma_nominal --> pronombre, complemento_nominal.
+sintagma_nominal --> [yo].
+sintagma_nominal --> [me].
 
-pronombre --> [yo].
-pronombre --> [me].
+% =========================================
+% CONECTORES / PALABRAS INTERMEDIAS
+% =========================================
 
-complemento_nominal --> [].
-complemento_nominal --> [soy].
-complemento_nominal --> [estoy].
+conectores --> [].
+conectores --> conector, conectores.
+
+conector --> [me].
+conector --> [mi].
+conector --> [mis].
+conector --> [lo].
+conector --> [la].
+conector --> [los].
+conector --> [las].
+conector --> [el].
+conector --> [al].
+conector --> [un].
+conector --> [una].
+conector --> [unos].
+conector --> [unas].
+conector --> [a].
+conector --> [de].
+conector --> [del].
+conector --> [con].
+conector --> [por].
+conector --> [para].
+conector --> [en].
+conector --> [que].
+conector --> [y].
+conector --> [o].
+
+pronombre_objeto --> [lo].
+pronombre_objeto --> [la].
+pronombre_objeto --> [los].
+pronombre_objeto --> [las].
+
+pronombre_opcional --> [].
+pronombre_opcional --> pronombre_objeto.
 
 % =========================================
 % SINTAGMA VERBAL
 % =========================================
 
-% ✅ CAMBIO: atributo ahora es opcional
-
+% Ej: me gusta la tecnologia
+% Ej: amo mucho las matematicas
 sintagma_verbal(positiva, Nivel, Atributo) -->
     verbo_positivo,
-    nivel(Nivel),
-    complemento,
-    atributo_opcional(Atributo).
+    conectores,
+    nivel_opcional(Nivel),
+    conectores,
+    atributo(Atributo).
 
+% Ej: me gusta la tecnologia mucho
 sintagma_verbal(positiva, Nivel, Atributo) -->
     verbo_positivo,
-    complemento,
-    atributo_opcional(Atributo),
-    nivel(Nivel).
+    conectores,
+    atributo(Atributo),
+    conectores,
+    nivel_opcional(Nivel).
 
+% Ej: soy muy habil con la tecnologia
+sintagma_verbal(positiva, Nivel, Atributo) -->
+    estado_positivo(Nivel),
+    conectores,
+    atributo(Atributo).
+
+% Ej: las matematicas me gustan
+sintagma_verbal(positiva, Nivel, Atributo) -->
+    atributo(Atributo),
+    conectores,
+    verbo_positivo,
+    conectores,
+    nivel_opcional(Nivel).
+
+% Ej: no me gusta la tecnologia
 sintagma_verbal(negativa, Nivel, Atributo) -->
     negacion,
+    conectores,
     verbo_positivo,
-    nivel(Nivel),
-    complemento,
-    atributo_opcional(Atributo).
+    conectores,
+    nivel_opcional(Nivel),
+    conectores,
+    atributo(Atributo).
 
+% Ej: odio las personas
 sintagma_verbal(negativa, Nivel, Atributo) -->
     verbo_negativo,
-    nivel(Nivel),
-    complemento,
-    atributo_opcional(Atributo).
+    conectores,
+    nivel_opcional(Nivel),
+    conectores,
+    atributo(Atributo).
 
-sintagma_verbal(positiva, Nivel, Atributo) -->
-    habilidad_positiva,
-    nivel(Nivel),
-    complemento,
-    atributo_opcional(Atributo).
-
+% Ej: detesto las ciencias mucho
 sintagma_verbal(negativa, Nivel, Atributo) -->
-    habilidad_negativa,
-    nivel(Nivel),
-    complemento,
-    atributo_opcional(Atributo).
+    verbo_negativo,
+    conectores,
+    atributo(Atributo),
+    conectores,
+    nivel_opcional(Nivel).
 
-sintagma_verbal(positiva, Nivel, Atributo) -->
-    preferencia_positiva,
-    nivel(Nivel),
-    complemento,
-    atributo_opcional(Atributo).
-
+% Ej: el area de salud la odio
 sintagma_verbal(negativa, Nivel, Atributo) -->
-    preferencia_negativa,
-    nivel(Nivel),
-    complemento,
-    atributo_opcional(Atributo).
+    atributo(Atributo),
+    conectores,
+    pronombre_objeto,
+    conectores,
+    verbo_negativo,
+    conectores,
+    nivel_opcional(Nivel).
 
-% ✅ CAMBIO: permite "me gusta"
-sintagma_verbal(positiva, medio, _) -->
+% Ej: no odio escribir
+% Esto realmente indica una afinidad baja, no una negativa fuerte.
+sintagma_verbal(positiva, bajo, Atributo) -->
+    negacion,
+    conectores,
+    verbo_negativo,
+    conectores,
+    atributo(Atributo).
+
+% =========================================
+% RESPUESTAS CORTAS
+% =========================================
+
+% IMPORTANTE:
+% "si" solo y "no" solo NO se aceptan.
+% Esto coincide con el PDF, porque pide que no se acepte si/no directamente.
+
+% Ej: si mucho
+% Ej: si me gusta
+% Ej: si me gustan
+% Ej: si me gustan las personas
+respuesta_corta(positiva, Nivel, Atributo) -->
+    afirmacion,
+    frase_positiva_corta(Nivel, Atributo).
+
+% Ej: no mucho
+% Ej: no me gusta
+% Ej: no me gusta la tecnologia
+respuesta_corta(negativa, Nivel, Atributo) -->
+    negacion,
+    frase_positiva_corta(Nivel, Atributo).
+
+% Ej: mucho
+% Ej: bastante
+% Ej: me gusta
+% Ej: me gustan
+% Ej: me fascinan
+respuesta_corta(positiva, Nivel, Atributo) -->
+    frase_positiva_corta(Nivel, Atributo).
+
+% Ej: la odio
+% Ej: los evito
+% Ej: odio conversar
+respuesta_corta(negativa, Nivel, Atributo) -->
+    frase_negativa_corta(Nivel, Atributo).
+
+% Ej: no lo odio
+% Se interpreta como afinidad baja, no como rechazo.
+respuesta_corta(positiva, bajo, _) -->
+    negacion,
+    conectores,
+    verbo_negativo,
+    conectores.
+
+% =========================================
+% FRASES CORTAS
+% =========================================
+
+frase_positiva_corta(NivelFinal, Atributo) -->
+    conectores,
+    elemento_positivo(NivelBase),
+    conectores,
+    atributo_opcional(Atributo),
+    conectores,
+    nivel_final(NivelBase, NivelFinal),
+    conectores.
+
+frase_negativa_corta(NivelFinal, Atributo) -->
+    conectores,
+    pronombre_opcional,
+    conectores,
+    verbo_negativo,
+    conectores,
+    atributo_opcional(Atributo),
+    conectores,
+    nivel_final(medio, NivelFinal),
+    conectores.
+
+elemento_positivo(Nivel) -->
+    nivel(Nivel).
+
+elemento_positivo(medio) -->
     verbo_positivo.
 
-% =========================================
-% RESPUESTAS CORTAS (SIN ATRIBUTO)
-% =========================================
+elemento_positivo(medio) -->
+    verbo_ser.
 
-% ❌ NO permite "si" solo
-respuesta_corta(positiva, Nivel) -->
-    afirmacion,
-    complemento_no_vacio,
+elemento_positivo(medio) -->
+    cualidad_positiva.
+
+atributo_opcional(Atributo) -->
+    atributo(Atributo).
+
+atributo_opcional(_) -->
+    tema_conocido.
+
+atributo_opcional(_) -->
+    [].
+
+tema_conocido --> [conversar].
+tema_conocido --> [charlar].
+tema_conocido --> [trabajar].
+tema_conocido --> [estudiar].
+
+nivel_final(_, Nivel) -->
     nivel(Nivel).
 
-respuesta_corta(positiva, Nivel) -->
-    afirmacion,
-    complemento_no_vacio.
-
-% ❌ NO permite "no" solo
-respuesta_corta(negativa, Nivel) -->
-    negacion,
-    complemento_no_vacio,
-    nivel(Nivel).
-
-respuesta_corta(negativa, Nivel) -->
-    negacion,
-    complemento_no_vacio.
-
-respuesta_corta(neutra, medio) -->
-    [mas], [o], [menos].
+nivel_final(Nivel, Nivel) -->
+    [].
 
 % =========================================
-% NIVEL / INTENSIDAD
+% NIVEL
 % =========================================
 
 nivel(alto) --> [mucho].
-nivel(alto) --> [muchos].
 nivel(alto) --> [bastante].
 nivel(alto) --> [muchisimo].
+nivel(alto) --> [demasiado].
+nivel(alto) --> [muy].
+
+nivel(medio) --> [algo].
+nivel(medio) --> [regular].
 
 nivel(bajo) --> [poco].
-nivel(bajo) --> [poquito].
 nivel(bajo) --> [apenas].
 
-nivel(medio) --> [].
+nivel_opcional(Nivel) -->
+    nivel(Nivel).
+
+nivel_opcional(medio) -->
+    [].
 
 % =========================================
-% COMPLEMENTOS
+% LEXICO POSITIVO
 % =========================================
 
-complemento --> [].
-complemento --> [_], complemento.
-
-complemento_no_vacio --> [_].
-complemento_no_vacio --> [_], complemento.
-
-% =========================================
-% ARTÍCULOS (NUEVO)
-% =========================================
-
-articulo --> [el].
-articulo --> [la].
-articulo --> [los].
-articulo --> [las].
-articulo --> [un].
-articulo --> [una].
-
-% =========================================
-% LEXICO BASE
-% =========================================
-
-verbo_positivo --> [amo].
-verbo_positivo --> [adoro].
 verbo_positivo --> [gusta].
 verbo_positivo --> [gustan].
 verbo_positivo --> [encanta].
+verbo_positivo --> [encantan].
 verbo_positivo --> [interesa].
+verbo_positivo --> [interesan].
+verbo_positivo --> [adoro].
+verbo_positivo --> [amo].
 verbo_positivo --> [disfruto].
 verbo_positivo --> [prefiero].
 verbo_positivo --> [fascina].
-verbo_positivo --> [Fascinan].
+verbo_positivo --> [fascinan].
+
+% Error ortografico comun: "facinan"
+verbo_positivo --> [facina].
+verbo_positivo --> [facinan].
 
 verbo_negativo --> [odio].
 verbo_negativo --> [detesto].
-verbo_negativo --> [rechazo].
-verbo_negativo --> [aborrezco].
 verbo_negativo --> [evito].
 
-habilidad_positiva --> [bueno].
-habilidad_positiva --> [capaz].
-habilidad_positiva --> [talentoso].
+verbo_ser --> [soy].
+verbo_ser --> [es].
+verbo_ser --> [son].
 
-habilidad_negativa --> [malo].
-habilidad_negativa --> [incapaz].
+estado_positivo(Nivel) -->
+    verbo_ser,
+    intensidad_opcional(Nivel),
+    cualidad_positiva.
 
-preferencia_positiva --> [prefiero].
-preferencia_positiva --> [elijo].
+intensidad_opcional(alto) -->
+    intensidad_alta.
 
-preferencia_negativa --> [evito].
+intensidad_opcional(medio) -->
+    [].
+
+intensidad_alta --> [muy].
+intensidad_alta --> [bastante].
+
+cualidad_positiva --> [habil].
+cualidad_positiva --> [bueno].
+cualidad_positiva --> [buena].
+cualidad_positiva --> [creativo].
+cualidad_positiva --> [creativa].
 
 negacion --> [no].
 negacion --> [nunca].
 
 afirmacion --> [si].
 afirmacion --> [claro].
+afirmacion --> [correcto].
+afirmacion --> [afirmativo].
 
 % =========================================
-% ATRIBUTOS (CORREGIDO)
+% ATRIBUTOS
 % =========================================
 
-% ✅ CAMBIO CLAVE: atributo ahora soporta artículos
+atributo(tecnologia) --> [tecnologia].
+atributo(tecnologia) --> [computadoras].
+atributo(tecnologia) --> [computador].
+atributo(tecnologia) --> [programacion].
 
-atributo(A) --> articulo, atributo_base(A).
-atributo(A) --> atributo_base(A).
+atributo(matematicas) --> [matematicas].
+atributo(matematicas) --> [mate].
+atributo(matematicas) --> [mates].
 
-% ✅ AQUÍ dejas todos los tuyos pero como atributo_base
+atributo(resolver_problemas) --> [problemas].
+atributo(resolver_problemas) --> [resolver, problemas].
+atributo(resolver_problemas) --> [solucionar, problemas].
 
-atributo_base(tecnologia) --> [tecnologia].
-atributo_base(tecnologia) --> [computadoras].
-atributo_base(tecnologia) --> [software].
+atributo(personas) --> [personas].
+atributo(personas) --> [gente].
 
-atributo_base(matematicas) --> [matematicas].
+atributo(escuchar) --> [escuchar].
+atributo(escuchar) --> [escuchando].
 
-atributo_base(resolver_problemas) --> [problemas].
+atributo(ayudar) --> [ayudar].
+atributo(ayudar) --> [ayudo].
 
-% (continúa con todos los demás que ya tenías)
+atributo(salud) --> [salud].
+atributo(salud) --> [area, salud].
+atributo(salud) --> [area, de, salud].
+atributo(salud) --> [el, area, salud].
+atributo(salud) --> [el, area, de, salud].
 
-% =========================================
-% ATRIBUTO OPCIONAL (NUEVO)
-% =========================================
+atributo(ciencias) --> [ciencias].
+atributo(ciencias) --> [ciencia].
 
-atributo_opcional(A) --> atributo(A).
-atributo_opcional(_) --> [].
+atributo(justicia) --> [justicia].
 
-% =========================================
-% CUALQUIER
-% =========================================
+atributo(argumentar) --> [argumentar].
+atributo(argumentar) --> [defender].
+atributo(argumentar) --> [defender, ideas].
 
-cualquier --> [].
-cualquier --> [_], cualquier.
+atributo(negocios) --> [negocios].
+atributo(negocios) --> [empresa].
+atributo(negocios) --> [empresas].
+
+atributo(liderazgo) --> [liderar].
+atributo(liderazgo) --> [liderazgo].
+atributo(liderazgo) --> [equipos].
+
+atributo(creatividad) --> [creatividad].
+atributo(creatividad) --> [creativo].
+atributo(creatividad) --> [creativa].
+
+atributo(arte) --> [arte].
+
+atributo(ensenar) --> [ensenar].
+atributo(ensenar) --> [explicar].
+atributo(ensenar) --> [temas].
+
+atributo(dibujo) --> [dibujar].
+atributo(dibujo) --> [disenar].
+atributo(dibujo) --> [dibujo].
+atributo(dibujo) --> [diseno].
+
+atributo(numeros) --> [numeros].
+atributo(numeros) --> [numero].
+
+atributo(finanzas) --> [finanzas].
+atributo(finanzas) --> [dinero].
+
+atributo(hablar) --> [hablar].
+atributo(hablar) --> [expresarme].
+atributo(hablar) --> [expresarse].
+atributo(hablar) --> [publico].
+
+atributo(escribir) --> [escribir].
+atributo(escribir) --> [escritura].

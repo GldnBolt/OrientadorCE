@@ -83,4 +83,4 @@ preguntar_lista([Attr|Resto], [Evidencia|Evs]) :-
         preguntar_lista([Attr|Resto], [Evidencia|Evs])
     ).
 
-    preguntar_lista(Resto, Evs).
+    
